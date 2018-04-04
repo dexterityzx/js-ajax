@@ -1,5 +1,5 @@
 /*
-call ajax sequentially and parallelly
+download parallelly and then process data sequentially  
 */
 define(
 'ajax-core',
@@ -11,15 +11,15 @@ function () {
 		return array && Array.isArray(array);
 	}
 
-	function isValidFunction(Fn){
+	function _isValidFunction(Fn){
 		return Fn && typeof Fn === 'function';
 	}
 
 	function _isValidFnsArray(array){
 		if(_isValidArray(array)){
 			array.map(function(fn){
-				if(!isValidFunction){
-					throw Error('error : funciton arrays')
+				if(!_isValidFunction){
+					throw Error('error : funciton arrays');
 				}
 			});
 		}
@@ -91,22 +91,24 @@ function () {
 		const data = params.data;
 		const thenFns = params.thenFns;
 		const catchFns = params.catchFns;
-		
+		//get an array of promises
 		urls.map(function(url,index){
 			return _get(params.urls[index],params.data[index]);
-		}).reduce(function(promiseChain, currentPromise, index){
-			return promiseChain.then( function(){
+		}).reduce(function(promiseSequence, currentPromise, index){
+			//chain the promise
+			return promiseSequence.then( function(){
 				return currentPromise;
 			}).then(function(data){
-				if( thenFns[index] && typeof thenFns[index] === 'function' ){
+				if( _isValidFunction(thenFns[index])){
 					return thenFns[index](data);
 				}
 			}).catch(function(err){
-				if( catchFns[index] && typeof catchFns[index] === 'function' ){
+				if( _isValidFunction(catchFns[index]) ){
 					catchFns[index](err);
 				}
 			});
-		}, Promise.resolve()).catch(function(err){
+		}, Promise.resolve())
+		.catch(function(err){
 			console.log(err);
 		})
 	}
