@@ -34,7 +34,7 @@ function () {
 		}
 	}
 
-	function _serialize = function(obj) {
+	function _serialize(obj) {
 		if(obj && typeof obj === 'object'){
 			var str = [];
 			for (var p in obj){
@@ -110,8 +110,8 @@ function () {
 		}, Promise.resolve())
 		.catch(function(err){
 			console.log(err);
-		})
-	}
+		});
+	};
 
 	return _pub;
 });
